@@ -8,7 +8,7 @@ const Pokedex = require('pokedex-promise-v2');
 const { nextTick } = require('process');
 const P = new Pokedex();
 
-//localhost:3000/pokemon 
+
 
 //Get pokemon collection
 router.get("/", (req, res)=> {
@@ -24,8 +24,25 @@ router.get("/", (req, res)=> {
     return res.send(pokemonCollection);                                          
 })
 
+//get pokemons by type
+router.get("/type/:type",(req,res,next)=>{
+    const type = req.params.type
+    P.getTypeByName(type)
+    .then((response)=>{
+        const namesArray = [];
+        for(const poke of response.pokemon) {
+          namesArray.push(poke.pokemon.name);
+        }
+        res.send(namesArray);
+  
+    })
+    .catch((error) =>{
+      next({"status": 404, "messege": "names list not found"});
+    });
 
-//Pokemon information
+})
+
+//Pokemon information by id
 router.get("/get/:id",  (req, res,next)=> {
         const id = req.params.id;
         P.getPokemonByName(id)
@@ -38,6 +55,8 @@ router.get("/get/:id",  (req, res,next)=> {
         });
 })
 
+
+// pokemon by name
 router.get("/query",  (req, res,next)=> {
     const pokename=req.body.query
     P.getPokemonByName(pokename)
@@ -92,6 +111,7 @@ function createPokeObj (pokeObj) {
         abilitiesArray.push(ability.ability.name);
     }
     const pokedexObj = {
+        "id":pokeObj.id,
         "name": pokeObj.forms[0].name, 
         "height": pokeObj.height,
         "weight": pokeObj.weight,
