@@ -50,7 +50,7 @@ router.get("/get/:id",  (req, res,next)=> {
             const pokeObj = createPokeObj(response);
             return res.send(pokeObj);
         })
-        .catch((error)=> {
+        .catch(()=> {
           next({"status": 404, "messege": "pokemon not found"});
         });
 })
